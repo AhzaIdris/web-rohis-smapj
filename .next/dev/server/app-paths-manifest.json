@@ -1,4 +1,5 @@
 {
+  "/dzikir/page": "app/dzikir/page.js",
   "/page": "app/page.js",
   "/silabus/page": "app/silabus/page.js",
   "/tabligh/page": "app/tabligh/page.js"

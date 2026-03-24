@@ -49,7 +49,7 @@ export default function SilabusPage() {
       </h1>
 
       <a href="/tabligh" className="text-sm text-blue-500 mb-3 inline-block">
-        ← Kembali ke Tabligh
+        → Buka Bank Materi Tabligh
       </a>
 
       

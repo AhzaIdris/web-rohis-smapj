@@ -39,18 +39,10 @@ export default function Home() {
       </section>
 
       {/* Menu Utama */}
-      <section className="grid grid-cols-2 gap-4">
+      <section className="grid grid-cols-1 gap-4">
 
-        <a href="/dzikir" className="bg-white rounded-xl shadow p-6 text-center">
-          <h2 className="font-semibold">Dzikir & Doa</h2>
-        </a>
-
-        <a href="/tabligh" className="bg-white rounded-xl shadow p-6 text-center">
+        <a href="/silabus" className="bg-white rounded-xl shadow p-6 text-center">
           <h2 className="font-semibold">Materi Tabligh</h2>
-        </a>
-
-        <a href="/silabus" className="bg-white rounded-xl shadow p-6 text-center col-span-2">
-          <h2 className="font-semibold">Silabus Tabligh</h2>
         </a>
 
       </section>

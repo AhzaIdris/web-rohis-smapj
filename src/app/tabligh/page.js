@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   addToSilabus,
   getSilabus,
@@ -10,7 +10,7 @@ import {
 import { useRouter } from "next/navigation";
 import html2canvas from "html2canvas";
 import { useRef } from "react";
-
+import { getFolders, addMateriToFolder, updateMateri } from "../../data/tablighData";
 
 <button
   onClick={() => {
@@ -26,6 +26,12 @@ export default function TablighPage() {
   const [currentFolder, setCurrentFolder] = useState(null);
   const [selected, setSelected] = useState(null);
   const [showKategori, setShowKategori] = useState(false);
+  const [folders, setFolders] = useState([]);
+  const handleOpenFolder = (folder) => {
+    const fresh = getFolders();
+    const selectedFolder = fresh.find(f => f.id === folder.id);
+    setCurrentFolder(selectedFolder);
+  };
   const router = useRouter();
   const imageRef = useRef(null);
 
@@ -37,23 +43,41 @@ export default function TablighPage() {
     link.href = image;
     link.download = "tabligh.png";
     link.click();
-   };
-  
-  const folders = [
-    {
-      name: "Aqidah",
-      materi: [
-        { id: 1, judul: "Iman kepada Allah", isi: "Penjelasan tentang keimanan..." },
-        { id: 2, judul: "Tauhid", isi: "Tauhid adalah mengesakan Allah..." }
-      ]
-    },
-    {
-      name: "Akhlak",
-      materi: [
-        { id: 3, judul: "Menjaga Lisan", isi: "Barang siapa beriman..." }
-      ]
-    }
-  ];
+  };
+
+  const refreshFolder = () => {
+    const allData = getTabligh();
+
+    // sesuaikan dengan struktur folder kamu
+    const updatedFolder = {
+      ...currentFolder,
+      materi: allData
+    };
+
+    setCurrentFolder(updatedFolder);
+  };
+
+    const [showAdd, setShowAdd] = useState(false);
+    const [judul, setJudul] = useState("");
+    const [isi, setIsi] = useState("");
+
+    useEffect(() => {
+      let data = localStorage.getItem("folders");
+
+      if (!data) {
+        const defaultFolders = [
+          { id: 1, name: "Aqidah", materi: [] },
+          { id: 2, name: "Akhlak", materi: [] }
+        ];
+
+        localStorage.setItem("folders", JSON.stringify(defaultFolders));
+        setFolders(defaultFolders);
+      } else {
+        setFolders(JSON.parse(data));
+      }
+    }, []);
+
+    console.log("FOLDERS:", folders);
 
   return (
     <main className="min-h-screen bg-gray-100 p-4">
@@ -68,24 +92,23 @@ export default function TablighPage() {
       </h1>
 
     <a href="/silabus" className="text-sm text-blue-500 mb-3 inline-block">
-        Lihat Silabus →
+        → Buka Silabus Tabligh
     </a>
 
       {/* ================= FOLDER VIEW ================= */}
       {!currentFolder && (
         <div className="space-y-3">
-          {folders.map((folder, index) => (
+          {folders.map((folder) => (
             <div
-              key={index}
-              onClick={() => setCurrentFolder(folder)}
-              className="bg-white p-4 rounded-xl shadow-sm cursor-pointer"
+              key={folder.id}
+              onClick={() => handleOpenFolder(folder)}
+              className="bg-white p-4 rounded-xl shadow cursor-pointer"
             >
               📁 {folder.name}
             </div>
           ))}
         </div>
       )}
-
       {/* ================= MATERI VIEW ================= */}
       {currentFolder && (
         <div>
@@ -98,12 +121,19 @@ export default function TablighPage() {
             ← Kembali
           </button>
 
+          <button
+            onClick={() => setShowAdd(true)}
+            className="mb-4 bg-green-500 text-white px-4 py-2 rounded-lg"
+          >
+            + Tambah Tabligh
+          </button>
+
           <h2 className="font-semibold mb-3">
             {currentFolder.name}
           </h2>
 
           <div className="space-y-3">
-            {currentFolder.materi.map((item) => (
+            {currentFolder?.materi?.map((item) => (
               <div
                 key={item.id}
                 onClick={() => setSelected(item)}
@@ -150,6 +180,17 @@ export default function TablighPage() {
 
             <div className="flex gap-3">
 
+                <button
+                  onClick={() => {
+                    setJudul(selected.judul);
+                    setIsi(selected.isi);
+                    setShowAdd(true);
+                  }}
+                  className="flex-1 bg-yellow-400 py-2 rounded-lg"
+                >
+                  Edit
+                </button>
+                
                 <button
                     onClick={() => setShowKategori(true)}
                     className="flex-1 bg-blue-500 text-white py-2 rounded-lg"
@@ -247,6 +288,74 @@ export default function TablighPage() {
             </div>
 
         </div>
+    )}
+
+    {showAdd && (
+      <div className="fixe inset-0 bg-black/40 flex items-center justify-center">
+
+        <div className="bg-white p-5 rounded-xl w-[90%] max-w-md">
+
+          <h2 className="font-semibold mb-3">Tambah Materi</h2>
+
+          <input
+            value={judul}
+            onChange={(e) => setJudul(e.target.value)}
+            placeholder="Judul"
+            className="w-full border p-2 mb-3 rounded"
+          />
+
+          <textarea
+            value={isi}
+            onChange={(e) => setIsi(e.target.value)}
+            placeholder="Isi materi"
+            className="w-full border p-2 mb-3 rounded"
+          />
+
+          <div className="flex gap-2">
+            <button
+              onClick={() => {
+                if (selected) {
+                  updateMateri(currentFolder.id, {
+                    id: selected.id,
+                    judul,
+                    isi
+                  });
+                } else {
+                  addMateriToFolder(currentFolder.id, {
+                    id: Date.now(),
+                    judul,
+                    isi
+                  });
+                }
+
+                // 🔥 WAJIB: reload SEMUA data
+                const updatedFolders = getFolders();
+                setFolders(updatedFolders);
+
+                // 🔥 update folder yang sedang dibuka
+                const updatedCurrent = updatedFolders.find(f => f.id === currentFolder.id);
+                setCurrentFolder(updatedCurrent);
+
+                setShowAdd(false);
+                setJudul("");
+                setIsi("");
+                setSelected(null);
+              }}
+              className="flex-1 bg-green-500 text-white py-2 rounded"
+            >
+              Simpan
+            </button>
+
+            <button
+              onClick={() => setShowAdd(false)}
+              className="flex-1 bg-gray-200 py-2 rounded"
+            >
+              Batal
+            </button>
+          </div>
+
+        </div>
+      </div>
     )}
 
     </main>

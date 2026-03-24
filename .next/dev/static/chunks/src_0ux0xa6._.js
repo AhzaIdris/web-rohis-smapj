@@ -81,6 +81,77 @@ if (typeof globalThis.$RefreshHelpers$ === 'object' && globalThis.$RefreshHelper
     __turbopack_context__.k.registerExports(__turbopack_context__.m, globalThis.$RefreshHelpers$);
 }
 }),
+"[project]/src/data/tablighData.js [app-client] (ecmascript)", ((__turbopack_context__) => {
+"use strict";
+
+__turbopack_context__.s([
+    "addMateriToFolder",
+    ()=>addMateriToFolder,
+    "getFolders",
+    ()=>getFolders,
+    "saveFolders",
+    ()=>saveFolders,
+    "updateMateri",
+    ()=>updateMateri
+]);
+function getFolders() {
+    if ("TURBOPACK compile-time falsy", 0) //TURBOPACK unreachable
+    ;
+    const data = localStorage.getItem("folders");
+    if (!data) {
+        const defaultFolders = [
+            {
+                id: 1,
+                name: "Aqidah",
+                materi: []
+            },
+            {
+                id: 2,
+                name: "Akhlak",
+                materi: []
+            }
+        ];
+        localStorage.setItem("folders", JSON.stringify(defaultFolders));
+        return defaultFolders;
+    }
+    return JSON.parse(data);
+}
+function saveFolders(folders) {
+    localStorage.setItem("folders", JSON.stringify(folders));
+}
+function addMateriToFolder(folderId, materi) {
+    const folders = getFolders();
+    const updated = folders.map((folder)=>{
+        if (folder.id === folderId) {
+            return {
+                ...folder,
+                materi: [
+                    ...folder.materi,
+                    materi
+                ]
+            };
+        }
+        return folder;
+    });
+    saveFolders(updated);
+}
+function updateMateri(folderId, updatedMateri) {
+    const folders = getFolders();
+    const updated = folders.map((folder)=>{
+        if (folder.id === folderId) {
+            return {
+                ...folder,
+                materi: folder.materi.map((item)=>item.id === updatedMateri.id ? updatedMateri : item)
+            };
+        }
+        return folder;
+    });
+    saveFolders(updated);
+}
+if (typeof globalThis.$RefreshHelpers$ === 'object' && globalThis.$RefreshHelpers !== null) {
+    __turbopack_context__.k.registerExports(__turbopack_context__.m, globalThis.$RefreshHelpers$);
+}
+}),
 "[project]/src/app/tabligh/page.js [app-client] (ecmascript)", ((__turbopack_context__) => {
 "use strict";
 
@@ -93,9 +164,11 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist
 var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$data$2f$silabusData$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/src/data/silabusData.js [app-client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$navigation$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/navigation.js [app-client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$html2canvas$2f$dist$2f$html2canvas$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/html2canvas/dist/html2canvas.js [app-client] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$data$2f$tablighData$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/src/data/tablighData.js [app-client] (ecmascript)");
 ;
 var _s = __turbopack_context__.k.signature();
 "use client";
+;
 ;
 ;
 ;
@@ -118,6 +191,12 @@ function TablighPage() {
     const [currentFolder, setCurrentFolder] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(null);
     const [selected1, setSelected] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(null);
     const [showKategori, setShowKategori] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(false);
+    const [folders, setFolders] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])([]);
+    const handleOpenFolder = (folder)=>{
+        const fresh = (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$data$2f$tablighData$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["getFolders"])();
+        const selectedFolder = fresh.find((f)=>f.id === folder.id);
+        setCurrentFolder(selectedFolder);
+    };
     const router1 = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$navigation$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useRouter"])();
     const imageRef = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useRef"])(null);
     const handleShareImage = async ()=>{
@@ -128,36 +207,42 @@ function TablighPage() {
         link.download = "tabligh.png";
         link.click();
     };
-    const folders = [
-        {
-            name: "Aqidah",
-            materi: [
-                {
-                    id: 1,
-                    judul: "Iman kepada Allah",
-                    isi: "Penjelasan tentang keimanan..."
-                },
-                {
-                    id: 2,
-                    judul: "Tauhid",
-                    isi: "Tauhid adalah mengesakan Allah..."
-                }
-            ]
-        },
-        {
-            name: "Akhlak",
-            materi: [
-                {
-                    id: 3,
-                    judul: "Menjaga Lisan",
-                    isi: "Barang siapa beriman..."
-                }
-            ]
-        }
-    ];
+    const refreshFolder = ()=>{
+        const allData = getTabligh();
+        // sesuaikan dengan struktur folder kamu
+        const updatedFolder = {
+            ...currentFolder,
+            materi: allData
+        };
+        setCurrentFolder(updatedFolder);
+    };
     const [showAdd, setShowAdd] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])(false);
     const [judul, setJudul] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])("");
     const [isi, setIsi] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useState"])("");
+    (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useEffect"])({
+        "TablighPage.useEffect": ()=>{
+            let data = localStorage.getItem("folders");
+            if (!data) {
+                const defaultFolders = [
+                    {
+                        id: 1,
+                        name: "Aqidah",
+                        materi: []
+                    },
+                    {
+                        id: 2,
+                        name: "Akhlak",
+                        materi: []
+                    }
+                ];
+                localStorage.setItem("folders", JSON.stringify(defaultFolders));
+                setFolders(defaultFolders);
+            } else {
+                setFolders(JSON.parse(data));
+            }
+        }
+    }["TablighPage.useEffect"], []);
+    console.log("FOLDERS:", folders);
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("main", {
         className: "min-h-screen bg-gray-100 p-4",
         children: [
@@ -167,7 +252,7 @@ function TablighPage() {
                 children: "Home"
             }, void 0, false, {
                 fileName: "[project]/src/app/tabligh/page.js",
-                lineNumber: 65,
+                lineNumber: 85,
                 columnNumber: 5
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h1", {
@@ -175,7 +260,7 @@ function TablighPage() {
                 children: "Materi Tabligh"
             }, void 0, false, {
                 fileName: "[project]/src/app/tabligh/page.js",
-                lineNumber: 70,
+                lineNumber: 90,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("a", {
@@ -184,26 +269,26 @@ function TablighPage() {
                 children: "→ Buka Silabus Tabligh"
             }, void 0, false, {
                 fileName: "[project]/src/app/tabligh/page.js",
-                lineNumber: 74,
+                lineNumber: 94,
                 columnNumber: 5
             }, this),
             !currentFolder && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                 className: "space-y-3",
-                children: folders.map((folder, index)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                        onClick: ()=>setCurrentFolder(folder),
-                        className: "bg-white p-4 rounded-xl shadow-sm cursor-pointer",
+                children: folders.map((folder)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                        onClick: ()=>handleOpenFolder(folder),
+                        className: "bg-white p-4 rounded-xl shadow cursor-pointer",
                         children: [
                             "📁 ",
                             folder.name
                         ]
-                    }, index, true, {
+                    }, folder.id, true, {
                         fileName: "[project]/src/app/tabligh/page.js",
-                        lineNumber: 82,
+                        lineNumber: 102,
                         columnNumber: 13
                     }, this))
             }, void 0, false, {
                 fileName: "[project]/src/app/tabligh/page.js",
-                lineNumber: 80,
+                lineNumber: 100,
                 columnNumber: 9
             }, this),
             currentFolder && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -214,7 +299,16 @@ function TablighPage() {
                         children: "← Kembali"
                     }, void 0, false, {
                         fileName: "[project]/src/app/tabligh/page.js",
-                        lineNumber: 98,
+                        lineNumber: 117,
+                        columnNumber: 11
+                    }, this),
+                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                        onClick: ()=>setShowAdd(true),
+                        className: "mb-4 bg-green-500 text-white px-4 py-2 rounded-lg",
+                        children: "+ Tambah Tabligh"
+                    }, void 0, false, {
+                        fileName: "[project]/src/app/tabligh/page.js",
+                        lineNumber: 124,
                         columnNumber: 11
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h2", {
@@ -222,12 +316,12 @@ function TablighPage() {
                         children: currentFolder.name
                     }, void 0, false, {
                         fileName: "[project]/src/app/tabligh/page.js",
-                        lineNumber: 105,
+                        lineNumber: 131,
                         columnNumber: 11
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                         className: "space-y-3",
-                        children: currentFolder.materi.map((item)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                        children: currentFolder?.materi?.map((item)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                 onClick: ()=>setSelected(item),
                                 className: "bg-white p-4 rounded-xl shadow-sm",
                                 children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -236,7 +330,7 @@ function TablighPage() {
                                             children: item.judul
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/tabligh/page.js",
-                                            lineNumber: 117,
+                                            lineNumber: 143,
                                             columnNumber: 21
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -250,29 +344,29 @@ function TablighPage() {
                                             })()
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/tabligh/page.js",
-                                            lineNumber: 120,
+                                            lineNumber: 146,
                                             columnNumber: 21
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/src/app/tabligh/page.js",
-                                    lineNumber: 116,
+                                    lineNumber: 142,
                                     columnNumber: 17
                                 }, this)
                             }, item.id, false, {
                                 fileName: "[project]/src/app/tabligh/page.js",
-                                lineNumber: 111,
+                                lineNumber: 137,
                                 columnNumber: 15
                             }, this))
                     }, void 0, false, {
                         fileName: "[project]/src/app/tabligh/page.js",
-                        lineNumber: 109,
+                        lineNumber: 135,
                         columnNumber: 11
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/app/tabligh/page.js",
-                lineNumber: 95,
+                lineNumber: 114,
                 columnNumber: 9
             }, this),
             selected1 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -284,7 +378,7 @@ function TablighPage() {
                             className: "w-10 h-1 bg-gray-300 mx-auto mb-4 rounded"
                         }, void 0, false, {
                             fileName: "[project]/src/app/tabligh/page.js",
-                            lineNumber: 145,
+                            lineNumber: 171,
                             columnNumber: 13
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h2", {
@@ -292,7 +386,7 @@ function TablighPage() {
                             children: selected1.judul
                         }, void 0, false, {
                             fileName: "[project]/src/app/tabligh/page.js",
-                            lineNumber: 147,
+                            lineNumber: 173,
                             columnNumber: 13
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -300,19 +394,32 @@ function TablighPage() {
                             children: selected1.isi
                         }, void 0, false, {
                             fileName: "[project]/src/app/tabligh/page.js",
-                            lineNumber: 151,
+                            lineNumber: 177,
                             columnNumber: 13
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                             className: "flex gap-3",
                             children: [
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                                    onClick: ()=>{
+                                        setJudul(selected1.judul);
+                                        setIsi(selected1.isi);
+                                        setShowAdd(true);
+                                    },
+                                    className: "flex-1 bg-yellow-400 py-2 rounded-lg",
+                                    children: "Edit"
+                                }, void 0, false, {
+                                    fileName: "[project]/src/app/tabligh/page.js",
+                                    lineNumber: 183,
+                                    columnNumber: 17
+                                }, this),
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
                                     onClick: ()=>setShowKategori(true),
                                     className: "flex-1 bg-blue-500 text-white py-2 rounded-lg",
                                     children: "Add to Silabus"
                                 }, void 0, false, {
                                     fileName: "[project]/src/app/tabligh/page.js",
-                                    lineNumber: 157,
+                                    lineNumber: 194,
                                     columnNumber: 17
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -321,7 +428,7 @@ function TablighPage() {
                                     children: "Share Image"
                                 }, void 0, false, {
                                     fileName: "[project]/src/app/tabligh/page.js",
-                                    lineNumber: 164,
+                                    lineNumber: 201,
                                     columnNumber: 17
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -330,13 +437,13 @@ function TablighPage() {
                                     children: "Close"
                                 }, void 0, false, {
                                     fileName: "[project]/src/app/tabligh/page.js",
-                                    lineNumber: 171,
+                                    lineNumber: 208,
                                     columnNumber: 17
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/app/tabligh/page.js",
-                            lineNumber: 155,
+                            lineNumber: 181,
                             columnNumber: 13
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -353,7 +460,7 @@ function TablighPage() {
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/app/tabligh/page.js",
-                                        lineNumber: 188,
+                                        lineNumber: 225,
                                         columnNumber: 17
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h1", {
@@ -361,7 +468,7 @@ function TablighPage() {
                                         children: selected1?.judul
                                     }, void 0, false, {
                                         fileName: "[project]/src/app/tabligh/page.js",
-                                        lineNumber: 193,
+                                        lineNumber: 230,
                                         columnNumber: 17
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -369,7 +476,7 @@ function TablighPage() {
                                         children: selected1?.isi
                                     }, void 0, false, {
                                         fileName: "[project]/src/app/tabligh/page.js",
-                                        lineNumber: 198,
+                                        lineNumber: 235,
                                         columnNumber: 17
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -377,29 +484,29 @@ function TablighPage() {
                                         children: "Rohis SMAPJ"
                                     }, void 0, false, {
                                         fileName: "[project]/src/app/tabligh/page.js",
-                                        lineNumber: 203,
+                                        lineNumber: 240,
                                         columnNumber: 17
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/app/tabligh/page.js",
-                                lineNumber: 182,
+                                lineNumber: 219,
                                 columnNumber: 13
                             }, this)
                         }, void 0, false, {
                             fileName: "[project]/src/app/tabligh/page.js",
-                            lineNumber: 181,
+                            lineNumber: 218,
                             columnNumber: 13
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/src/app/tabligh/page.js",
-                    lineNumber: 143,
+                    lineNumber: 169,
                     columnNumber: 11
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/src/app/tabligh/page.js",
-                lineNumber: 141,
+                lineNumber: 167,
                 columnNumber: 9
             }, this),
             showKategori && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -412,7 +519,7 @@ function TablighPage() {
                             children: "Pilih Kategori"
                         }, void 0, false, {
                             fileName: "[project]/src/app/tabligh/page.js",
-                            lineNumber: 221,
+                            lineNumber: 258,
                             columnNumber: 13
                         }, this),
                         [
@@ -431,7 +538,7 @@ function TablighPage() {
                                 children: kat
                             }, index, false, {
                                 fileName: "[project]/src/app/tabligh/page.js",
-                                lineNumber: 228,
+                                lineNumber: 265,
                                 columnNumber: 17
                             }, this)),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -440,28 +547,123 @@ function TablighPage() {
                             children: "Batal"
                         }, void 0, false, {
                             fileName: "[project]/src/app/tabligh/page.js",
-                            lineNumber: 244,
+                            lineNumber: 281,
                             columnNumber: 13
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/src/app/tabligh/page.js",
-                    lineNumber: 219,
+                    lineNumber: 256,
                     columnNumber: 13
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/src/app/tabligh/page.js",
-                lineNumber: 217,
+                lineNumber: 254,
                 columnNumber: 9
+            }, this),
+            showAdd && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                className: "fixe inset-0 bg-black/40 flex items-center justify-center",
+                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                    className: "bg-white p-5 rounded-xl w-[90%] max-w-md",
+                    children: [
+                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h2", {
+                            className: "font-semibold mb-3",
+                            children: "Tambah Materi"
+                        }, void 0, false, {
+                            fileName: "[project]/src/app/tabligh/page.js",
+                            lineNumber: 298,
+                            columnNumber: 11
+                        }, this),
+                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
+                            value: judul,
+                            onChange: (e)=>setJudul(e.target.value),
+                            placeholder: "Judul",
+                            className: "w-full border p-2 mb-3 rounded"
+                        }, void 0, false, {
+                            fileName: "[project]/src/app/tabligh/page.js",
+                            lineNumber: 300,
+                            columnNumber: 11
+                        }, this),
+                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("textarea", {
+                            value: isi,
+                            onChange: (e)=>setIsi(e.target.value),
+                            placeholder: "Isi materi",
+                            className: "w-full border p-2 mb-3 rounded"
+                        }, void 0, false, {
+                            fileName: "[project]/src/app/tabligh/page.js",
+                            lineNumber: 307,
+                            columnNumber: 11
+                        }, this),
+                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                            className: "flex gap-2",
+                            children: [
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                                    onClick: ()=>{
+                                        if (selected1) {
+                                            (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$data$2f$tablighData$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["updateMateri"])(currentFolder.id, {
+                                                id: selected1.id,
+                                                judul,
+                                                isi
+                                            });
+                                        } else {
+                                            (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$data$2f$tablighData$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["addMateriToFolder"])(currentFolder.id, {
+                                                id: Date.now(),
+                                                judul,
+                                                isi
+                                            });
+                                        }
+                                        // 🔥 WAJIB: reload SEMUA data
+                                        const updatedFolders = (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$data$2f$tablighData$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["getFolders"])();
+                                        setFolders(updatedFolders);
+                                        // 🔥 update folder yang sedang dibuka
+                                        const updatedCurrent = updatedFolders.find((f)=>f.id === currentFolder.id);
+                                        setCurrentFolder(updatedCurrent);
+                                        setShowAdd(false);
+                                        setJudul("");
+                                        setIsi("");
+                                        setSelected(null);
+                                    },
+                                    className: "flex-1 bg-green-500 text-white py-2 rounded",
+                                    children: "Simpan"
+                                }, void 0, false, {
+                                    fileName: "[project]/src/app/tabligh/page.js",
+                                    lineNumber: 315,
+                                    columnNumber: 13
+                                }, this),
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                                    onClick: ()=>setShowAdd(false),
+                                    className: "flex-1 bg-gray-200 py-2 rounded",
+                                    children: "Batal"
+                                }, void 0, false, {
+                                    fileName: "[project]/src/app/tabligh/page.js",
+                                    lineNumber: 349,
+                                    columnNumber: 13
+                                }, this)
+                            ]
+                        }, void 0, true, {
+                            fileName: "[project]/src/app/tabligh/page.js",
+                            lineNumber: 314,
+                            columnNumber: 11
+                        }, this)
+                    ]
+                }, void 0, true, {
+                    fileName: "[project]/src/app/tabligh/page.js",
+                    lineNumber: 296,
+                    columnNumber: 9
+                }, this)
+            }, void 0, false, {
+                fileName: "[project]/src/app/tabligh/page.js",
+                lineNumber: 294,
+                columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/src/app/tabligh/page.js",
-        lineNumber: 63,
+        lineNumber: 83,
         columnNumber: 5
     }, this);
 }
-_s(TablighPage, "L4ZQZnWRjruJGaSJ5V8Vje0PDm8=", false, function() {
+_s(TablighPage, "oiCWdyYTJYsjVMISDA+RxPmDw28=", false, function() {
     return [
         __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$navigation$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useRouter"]
     ];
@@ -475,4 +677,4 @@ if (typeof globalThis.$RefreshHelpers$ === 'object' && globalThis.$RefreshHelper
 }),
 ]);
 
-//# sourceMappingURL=src_11_2h~3._.js.map
+//# sourceMappingURL=src_0ux0xa6._.js.map
