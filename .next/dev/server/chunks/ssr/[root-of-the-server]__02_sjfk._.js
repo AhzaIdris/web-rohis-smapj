@@ -15,18 +15,23 @@ __turbopack_context__.s([
     ()=>getKategoriByMateri,
     "getSilabus",
     ()=>getSilabus,
+    "getSilabusRaw",
+    ()=>getSilabusRaw,
     "isInSilabus",
     ()=>isInSilabus,
     "removeFromSilabus",
-    ()=>removeFromSilabus
+    ()=>removeFromSilabus,
+    "removeFromSilabusByMateriId",
+    ()=>removeFromSilabusByMateriId
 ]);
+;
 function getSilabus() {
     if ("TURBOPACK compile-time truthy", 1) return [];
     //TURBOPACK unreachable
     ;
     const data = undefined;
-    const defaultData = undefined;
-    const parsed = undefined;
+    const silabus = undefined;
+    const folders = undefined;
 }
 function addToSilabus(materi, kategoriIndex) {
     const current = getSilabus();
@@ -36,16 +41,32 @@ function addToSilabus(materi, kategoriIndex) {
         alert("Materi ini sudah ada di kategori tersebut! Silakan pilih kategori lain.");
         return false;
     }
-    current[kategoriIndex].items.push(materi);
+    current[kategoriIndex].items.push({
+        id: materi.id,
+        refId: Date.now()
+    });
     localStorage.setItem("silabus", JSON.stringify(current));
     return true;
 }
-function removeFromSilabus(id) {
+function removeFromSilabus(refId) {
     const current = getSilabus();
     current.forEach((kategori)=>{
-        kategori.items = kategori.items.filter((item)=>item.id !== id);
+        kategori.items = kategori.items.filter((item)=>item.refId !== refId);
     });
     localStorage.setItem("silabus", JSON.stringify(current));
+}
+function removeFromSilabusByMateriId(materiId) {
+    const current = getSilabusRaw(); //  nanti kita pakai raw data
+    current.forEach((kategori)=>{
+        kategori.items = kategori.items.filter((item)=>item.id !== materiId);
+    });
+    localStorage.setItem("silabus", JSON.stringify(current));
+}
+function getSilabusRaw() {
+    if ("TURBOPACK compile-time truthy", 1) return [];
+    //TURBOPACK unreachable
+    ;
+    const data = undefined;
 }
 function isInSilabus(id) {
     const current = getSilabus();
@@ -63,6 +84,67 @@ function getKategoriByMateri(id) {
     return kategoriList;
 }
 }),
+"[project]/src/data/tablighData.js [app-ssr] (ecmascript)", ((__turbopack_context__) => {
+"use strict";
+
+__turbopack_context__.s([
+    "addMateriToFolder",
+    ()=>addMateriToFolder,
+    "deleteMateri",
+    ()=>deleteMateri,
+    "getFolders",
+    ()=>getFolders,
+    "saveFolders",
+    ()=>saveFolders,
+    "updateMateri",
+    ()=>updateMateri
+]);
+function getFolders() {
+    if ("TURBOPACK compile-time truthy", 1) return [];
+    //TURBOPACK unreachable
+    ;
+    const data = undefined;
+}
+function saveFolders(folders) {
+    localStorage.setItem("folders", JSON.stringify(folders));
+}
+function addMateriToFolder(folderId, materi) {
+    const folders = getFolders();
+    const updated = folders.map((folder)=>{
+        if (folder.id === folderId) {
+            return {
+                ...folder,
+                materi: [
+                    ...folder.materi,
+                    materi
+                ]
+            };
+        }
+        return folder;
+    });
+    saveFolders(updated);
+}
+function updateMateri(folderId, updatedMateri) {
+    const folders = getFolders();
+    const updated = folders.map((folder)=>{
+        if (folder.id === folderId) {
+            return {
+                ...folder,
+                materi: folder.materi.map((item)=>item.id === updatedMateri.id ? updatedMateri : item)
+            };
+        }
+        return folder;
+    });
+    saveFolders(updated);
+}
+function deleteMateri(folderId, materiId) {
+    const data = getFolders();
+    const folder = data.find((f)=>f.id === folderId);
+    if (!folder) return;
+    folder.materi = folder.materi.filter((m)=>m.id !== materiId);
+    localStorage.setItem("folders", JSON.stringify(data));
+}
+}),
 "[project]/src/app/silabus/page.js [app-ssr] (ecmascript)", ((__turbopack_context__) => {
 "use strict";
 
@@ -74,6 +156,7 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/next/dist/server/route-modules/app-page/vendored/ssr/react.js [app-ssr] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$data$2f$silabusData$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/src/data/silabusData.js [app-ssr] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$html2canvas$2f$dist$2f$html2canvas$2e$esm$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/node_modules/html2canvas/dist/html2canvas.esm.js [app-ssr] (ecmascript)");
+var __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$data$2f$tablighData$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/src/data/tablighData.js [app-ssr] (ecmascript)");
 "use client";
 ;
 ;
@@ -88,6 +171,10 @@ function SilabusPage() {
     const [showEdit, setShowEdit] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])(false);
     const [judul, setJudul] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])("");
     const [isi, setIsi] = (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["useState"])("");
+    const refreshSilabus = ()=>{
+        const updated = (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$data$2f$silabusData$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["getSilabus"])();
+        setSilabus(updated);
+    };
     const handleShareImage = async ()=>{
         const canvas = await (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$html2canvas$2f$dist$2f$html2canvas$2e$esm$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["default"])(imageRef.current);
         const image = canvas.toDataURL("image/png");
@@ -122,7 +209,7 @@ function SilabusPage() {
                 children: "Home"
             }, void 0, false, {
                 fileName: "[project]/src/app/silabus/page.js",
-                lineNumber: 47,
+                lineNumber: 51,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("h1", {
@@ -130,7 +217,7 @@ function SilabusPage() {
                 children: "Silabus Tabligh"
             }, void 0, false, {
                 fileName: "[project]/src/app/silabus/page.js",
-                lineNumber: 51,
+                lineNumber: 55,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("a", {
@@ -139,7 +226,7 @@ function SilabusPage() {
                 children: "→ Buka Bank Materi Tabligh"
             }, void 0, false, {
                 fileName: "[project]/src/app/silabus/page.js",
-                lineNumber: 55,
+                lineNumber: 57,
                 columnNumber: 7
             }, this),
             silabus.map((kategori, kIndex)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -150,7 +237,7 @@ function SilabusPage() {
                             children: kategori.kategori
                         }, void 0, false, {
                             fileName: "[project]/src/app/silabus/page.js",
-                            lineNumber: 64,
+                            lineNumber: 63,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -164,19 +251,36 @@ function SilabusPage() {
                                             children: item.judul
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/silabus/page.js",
-                                            lineNumber: 72,
+                                            lineNumber: 68,
                                             columnNumber: 17
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
                                             onClick: ()=>{
-                                                (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$data$2f$silabusData$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["removeFromSilabus"])(item.id);
-                                                setSilabus((0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$data$2f$silabusData$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["getSilabus"])()); // refresh UI
+                                                setSelected(item);
+                                                setJudul(item.judul);
+                                                setIsi(item.isi);
+                                                setShowEdit(true);
+                                            },
+                                            className: "flex-1 bg-yellow-400 py-2 rounded-lg",
+                                            children: "Edit"
+                                        }, void 0, false, {
+                                            fileName: "[project]/src/app/silabus/page.js",
+                                            lineNumber: 75,
+                                            columnNumber: 17
+                                        }, this),
+                                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                                            onClick: ()=>{
+                                                (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$data$2f$silabusData$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["removeFromSilabus"])(item.refId);
+                                                setSilabus((0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$data$2f$silabusData$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["getSilabus"])());
+                                                // 🔥 WAJIB: tutup semua state
+                                                setSelected(null);
+                                                setShowEdit(false);
                                             },
                                             className: "mt-2 text-xs text-red-500",
                                             children: "Remove"
                                         }, void 0, false, {
                                             fileName: "[project]/src/app/silabus/page.js",
-                                            lineNumber: 76,
+                                            lineNumber: 87,
                                             columnNumber: 17
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -188,7 +292,7 @@ function SilabusPage() {
                                                     children: "↑"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/silabus/page.js",
-                                                    lineNumber: 88,
+                                                    lineNumber: 103,
                                                     columnNumber: 19
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
@@ -197,24 +301,24 @@ function SilabusPage() {
                                                     children: "↓"
                                                 }, void 0, false, {
                                                     fileName: "[project]/src/app/silabus/page.js",
-                                                    lineNumber: 94,
+                                                    lineNumber: 109,
                                                     columnNumber: 19
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/src/app/silabus/page.js",
-                                            lineNumber: 87,
+                                            lineNumber: 102,
                                             columnNumber: 17
                                         }, this)
                                     ]
                                 }, item.id, true, {
                                     fileName: "[project]/src/app/silabus/page.js",
-                                    lineNumber: 70,
+                                    lineNumber: 67,
                                     columnNumber: 15
                                 }, this))
                         }, void 0, false, {
                             fileName: "[project]/src/app/silabus/page.js",
-                            lineNumber: 68,
+                            lineNumber: 65,
                             columnNumber: 11
                         }, this)
                     ]
@@ -223,7 +327,7 @@ function SilabusPage() {
                     lineNumber: 62,
                     columnNumber: 9
                 }, this)),
-            selected && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+            selected && !showEdit && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                 className: "fixed inset-0 bg-black/40 flex items-end",
                 children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                     className: "bg-white w-full rounded-t-2xl p-5",
@@ -232,7 +336,7 @@ function SilabusPage() {
                             className: "w-10 h-1 bg-gray-300 mx-auto mb-4 rounded"
                         }, void 0, false, {
                             fileName: "[project]/src/app/silabus/page.js",
-                            lineNumber: 115,
+                            lineNumber: 126,
                             columnNumber: 13
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("h2", {
@@ -240,7 +344,7 @@ function SilabusPage() {
                             children: selected.judul
                         }, void 0, false, {
                             fileName: "[project]/src/app/silabus/page.js",
-                            lineNumber: 117,
+                            lineNumber: 128,
                             columnNumber: 13
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -248,47 +352,37 @@ function SilabusPage() {
                             children: selected.isi
                         }, void 0, false, {
                             fileName: "[project]/src/app/silabus/page.js",
-                            lineNumber: 121,
+                            lineNumber: 130,
                             columnNumber: 13
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                             className: "flex gap-3",
                             children: [
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                    onClick: ()=>{
-                                        setJudul(selected.judul);
-                                        setIsi(selected.isi);
-                                        setShowEdit(true);
-                                    },
-                                    className: "flex-1 bg-yellow-400 py-2 rounded-lg",
-                                    children: "Edit"
-                                }, void 0, false, {
-                                    fileName: "[project]/src/app/silabus/page.js",
-                                    lineNumber: 126,
-                                    columnNumber: 15
-                                }, this),
-                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
                                     onClick: handleShareImage,
                                     className: "bg-green-500 text-white px-3 py-2 rounded",
                                     children: "Share Image"
                                 }, void 0, false, {
                                     fileName: "[project]/src/app/silabus/page.js",
-                                    lineNumber: 137,
+                                    lineNumber: 133,
                                     columnNumber: 15
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
-                                    onClick: ()=>setSelected(null),
+                                    onClick: ()=>{
+                                        setSelected(null);
+                                        setShowEdit(false);
+                                    },
                                     className: "flex-1 bg-gray-200 py-2 rounded-lg",
                                     children: "Close"
                                 }, void 0, false, {
                                     fileName: "[project]/src/app/silabus/page.js",
-                                    lineNumber: 144,
+                                    lineNumber: 140,
                                     columnNumber: 15
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/src/app/silabus/page.js",
-                            lineNumber: 125,
+                            lineNumber: 132,
                             columnNumber: 13
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -305,63 +399,147 @@ function SilabusPage() {
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/src/app/silabus/page.js",
-                                        lineNumber: 158,
-                                        columnNumber: 21
+                                        lineNumber: 157,
+                                        columnNumber: 17
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("h1", {
                                         className: "text-xl font-bold mt-2",
                                         children: selected?.judul
                                     }, void 0, false, {
                                         fileName: "[project]/src/app/silabus/page.js",
-                                        lineNumber: 162,
-                                        columnNumber: 21
+                                        lineNumber: 161,
+                                        columnNumber: 17
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
                                         className: "text-sm mt-4",
                                         children: selected?.isi
                                     }, void 0, false, {
                                         fileName: "[project]/src/app/silabus/page.js",
-                                        lineNumber: 166,
-                                        columnNumber: 21
+                                        lineNumber: 163,
+                                        columnNumber: 17
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
                                         className: "text-xs mt-6",
                                         children: "Rohis SMAPJ"
                                     }, void 0, false, {
                                         fileName: "[project]/src/app/silabus/page.js",
-                                        lineNumber: 170,
-                                        columnNumber: 21
+                                        lineNumber: 165,
+                                        columnNumber: 17
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/src/app/silabus/page.js",
-                                lineNumber: 154,
-                                columnNumber: 17
+                                lineNumber: 153,
+                                columnNumber: 15
                             }, this)
                         }, void 0, false, {
                             fileName: "[project]/src/app/silabus/page.js",
-                            lineNumber: 153,
+                            lineNumber: 152,
                             columnNumber: 13
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/src/app/silabus/page.js",
-                    lineNumber: 113,
+                    lineNumber: 125,
                     columnNumber: 11
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/src/app/silabus/page.js",
-                lineNumber: 111,
+                lineNumber: 124,
+                columnNumber: 9
+            }, this),
+            showEdit && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                className: "fixed inset-0 bg-black/40 flex items-center justify-center",
+                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                    className: "bg-white p-5 rounded-xl w-[90%] max-w-md",
+                    children: [
+                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("h2", {
+                            className: "font-semibold mb-3",
+                            children: "Edit Materi"
+                        }, void 0, false, {
+                            fileName: "[project]/src/app/silabus/page.js",
+                            lineNumber: 175,
+                            columnNumber: 13
+                        }, this),
+                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("input", {
+                            value: judul,
+                            onChange: (e)=>setJudul(e.target.value),
+                            className: "w-full border p-2 mb-3 rounded"
+                        }, void 0, false, {
+                            fileName: "[project]/src/app/silabus/page.js",
+                            lineNumber: 177,
+                            columnNumber: 13
+                        }, this),
+                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("textarea", {
+                            value: isi,
+                            onChange: (e)=>setIsi(e.target.value),
+                            className: "w-full border p-2 mb-3 rounded"
+                        }, void 0, false, {
+                            fileName: "[project]/src/app/silabus/page.js",
+                            lineNumber: 183,
+                            columnNumber: 13
+                        }, this),
+                        /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
+                            className: "flex gap-2",
+                            children: [
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                                    onClick: ()=>{
+                                        const folders = (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$data$2f$tablighData$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["getFolders"])();
+                                        folders.forEach((folder)=>{
+                                            const found = folder.materi.find((m)=>m.id === selected.id);
+                                            if (found) {
+                                                (0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$data$2f$tablighData$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["updateMateri"])(folder.id, {
+                                                    id: selected.id,
+                                                    judul,
+                                                    isi
+                                                });
+                                            }
+                                        });
+                                        refreshSilabus();
+                                        setShowEdit(false);
+                                        setSelected(null);
+                                    },
+                                    className: "flex-1 bg-green-500 text-white py-2 rounded",
+                                    children: "Simpan"
+                                }, void 0, false, {
+                                    fileName: "[project]/src/app/silabus/page.js",
+                                    lineNumber: 190,
+                                    columnNumber: 15
+                                }, this),
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$server$2f$route$2d$modules$2f$app$2d$page$2f$vendored$2f$ssr$2f$react$2d$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$ssr$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
+                                    onClick: ()=>setShowEdit(false),
+                                    className: "flex-1 bg-gray-200 py-2 rounded",
+                                    children: "Batal"
+                                }, void 0, false, {
+                                    fileName: "[project]/src/app/silabus/page.js",
+                                    lineNumber: 217,
+                                    columnNumber: 15
+                                }, this)
+                            ]
+                        }, void 0, true, {
+                            fileName: "[project]/src/app/silabus/page.js",
+                            lineNumber: 189,
+                            columnNumber: 13
+                        }, this)
+                    ]
+                }, void 0, true, {
+                    fileName: "[project]/src/app/silabus/page.js",
+                    lineNumber: 174,
+                    columnNumber: 11
+                }, this)
+            }, void 0, false, {
+                fileName: "[project]/src/app/silabus/page.js",
+                lineNumber: 173,
                 columnNumber: 9
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/src/app/silabus/page.js",
-        lineNumber: 46,
+        lineNumber: 50,
         columnNumber: 5
     }, this);
 }
 }),
 ];
 
-//# sourceMappingURL=%5Broot-of-the-server%5D__0y5xdbn._.js.map
+//# sourceMappingURL=%5Broot-of-the-server%5D__02_sjfk._.js.map
